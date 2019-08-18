@@ -1,26 +1,37 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+/** @jsx jsx */
+import { jsx, css } from '@emotion/core';
+import { Typography } from 'antd';
+import { FlightDetailsContainer } from './components/FlightDetailsContainer';
+import { useMediaQuery, smallScreenQuery } from './hooks';
+
+const { Title } = Typography;
+
+const AppStyles = css`
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+`;
 
 const App: React.FC = () => {
+  const isSmallScreen = useMediaQuery(smallScreenQuery);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div css={AppStyles}>
+      <Title
+        level={2}
+        css={css(
+          { paddingLeft: '0.5vw' },
+          isSmallScreen &&
+            css`
+              text-align: center;
+            `
+        )}
+      >
+        Flight Search App
+      </Title>
+      <FlightDetailsContainer />
     </div>
   );
-}
+};
 
 export default App;
