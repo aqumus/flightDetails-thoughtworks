@@ -17,6 +17,15 @@ type FlightDetailsListProps = {
   readonly isSearching: boolean;
 };
 
+const ListContainer = styled.div<{ hasReturnFlight: boolean }>(
+  ({ hasReturnFlight }) => `
+  height: ${hasReturnFlight ? '40vh' : '80vh'};
+  max-height: ${hasReturnFlight ? '40vh' : '80vh'};
+  margin-bottom: 20px;
+  overflow: scroll;
+`
+);
+
 export function FlightDetailsList({
   flightsDetails,
   isSearching = true
@@ -32,13 +41,14 @@ export function FlightDetailsList({
   return (
     <FlightList>
       {flightsDetails.map(
-        ({ origin, destination, flights, date, direction }) => (
+        ({ origin, destination, flights, date, direction }, index) => (
           <Col
             xs={24}
             sm={24}
-            md={flightDetailsColSize}
-            lg={flightDetailsColSize}
+            md={24}
+            lg={24}
             xl={flightDetailsColSize}
+            key={index}
           >
             <FlightDetailsListHeader
               origin={origin}
@@ -47,9 +57,11 @@ export function FlightDetailsList({
               totalFlights={flights.length}
               direction={direction}
             />
-            {flights.map((details: FlightDetails) => (
-              <FlightDeltailsListItem {...details} />
-            ))}
+            <ListContainer hasReturnFlight={hasReturnFlight}>
+              {flights.map((details: FlightDetails, index) => (
+                <FlightDeltailsListItem {...details} key={index} />
+              ))}
+            </ListContainer>
           </Col>
         )
       )}

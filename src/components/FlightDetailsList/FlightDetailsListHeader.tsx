@@ -2,7 +2,7 @@ import React from 'react';
 import moment from 'moment';
 /** @jsx jsx */
 import { jsx, css } from '@emotion/core';
-import { Row, Col, Typography } from 'antd';
+import { Row, Typography } from 'antd';
 import { FlightDirection, DATE_FORMAT } from '../../model';
 import styled from '@emotion/styled-base';
 import flightIcon from './flightIcon.svg';
@@ -24,6 +24,14 @@ const HeaderContainer = styled(FlexRow)`
   padding-left: 10px;
 `;
 
+const FlightIconImage = styled('img')<{ direction: FlightDirection }>(
+  ({ direction }) =>
+    direction === FlightDirection.ARRIVAL &&
+    `
+transform: rotate(-180deg);
+`
+);
+
 export const FlightDetailsListHeader: React.FC<
   FlightDetailsListHeaderProps
 > = ({ origin, destination, date, totalFlights = 0, direction }) => {
@@ -34,7 +42,11 @@ export const FlightDetailsListHeader: React.FC<
         padding-bottom: 20px;
       `}
     >
-      <img src={flightIcon} alt="Flight icon" />
+      <FlightIconImage
+        src={flightIcon}
+        alt="Flight icon"
+        direction={direction}
+      />
       <HeaderContainer>
         <Row>
           <StyledResponsiveTitle

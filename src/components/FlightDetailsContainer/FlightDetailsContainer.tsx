@@ -2,10 +2,13 @@ import React, { useCallback } from 'react';
 /** @jsx jsx */
 import { jsx, css } from '@emotion/core';
 import styled from '@emotion/styled';
-import { FlightDetailsForm } from '../FlightDetailsForm';
+import {
+  FlightDetailsForm,
+  DrawerFlightDetailsForm
+} from '../FlightDetailsForm';
 import { FlightDetailsList } from '../FlightDetailsList';
+import {} from '../FlightDetailsForm';
 import { useSmallScreenMediaQuery, useFlightDetails } from '../../hooks';
-import { FlightDetails } from '../../model';
 
 const FlightDetailConatinerStyles = css`
   display: flex;
@@ -37,7 +40,13 @@ export const FlightDetailsContainer: React.FC = () => {
   return (
     <div css={FlightDetailConatinerStyles}>
       {!isSmallScreen && <FlightDetailsForm onSubmit={onSubmit} />}
-      <Divider />
+      {!isSmallScreen && <Divider />}
+      {isSmallScreen && (
+        <DrawerFlightDetailsForm
+          onSubmit={onSubmit}
+          isSearching={isSearching}
+        />
+      )}
       <FlightDetailsList flightsDetails={flights} isSearching={isSearching} />
     </div>
   );

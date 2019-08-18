@@ -1,6 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
-/** @jsx jsx */
-import { jsx, css } from '@emotion/core';
+import React, { useCallback } from 'react';
 import {
   Form,
   Button,
@@ -21,14 +19,19 @@ import {
 } from './FlightDetailsForm.styles';
 import { JourneyType, CITIES, FlightDetailsFormValues } from '../../model';
 
-type FlightDetailsFormProps = FormComponentProps & {
+export type FlightDetailsFormOwnProps = {
   readonly onSubmit: (formValues: FlightDetailsFormValues) => void;
 };
+
+type FlightDetailsFormProps = FormComponentProps & FlightDetailsFormOwnProps;
 
 const hasFormErrors = (errors: object) =>
   Object.values(errors).some(error => error);
 
-function _FlightDetailsForm({ form, onSubmit }: FlightDetailsFormProps) {
+const _FlightDetailsForm: React.FC<FlightDetailsFormProps> = ({
+  form,
+  onSubmit
+}) => {
   const {
     getFieldDecorator,
     getFieldValue,
@@ -50,7 +53,7 @@ function _FlightDetailsForm({ form, onSubmit }: FlightDetailsFormProps) {
   );
 
   return (
-    <FormContainer xs={8} sm={8} md={6} lg={6} xl={4}>
+    <FormContainer xs={24} sm={24} md={6} lg={6} xl={4}>
       <Form onSubmit={handleSubmit}>
         <StyledDirectionFormItem>
           {getFieldDecorator('journeyType', {
@@ -152,7 +155,7 @@ function _FlightDetailsForm({ form, onSubmit }: FlightDetailsFormProps) {
       </Form>
     </FormContainer>
   );
-}
+};
 
 export const FlightDetailsForm = Form.create<FlightDetailsFormProps>({
   name: 'flightDetailsForm'

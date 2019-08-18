@@ -1,9 +1,9 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 /** @jsx jsx */
 import { jsx, css } from '@emotion/core';
 import styled from '@emotion/styled';
 import { Col, Typography, Button, Card } from 'antd';
-import moment, { Duration, Moment } from 'moment';
+import moment from 'moment';
 import { FlexRow } from '../FlexRow';
 import { StyledResponsiveTitle } from '../StyledResponsiveTitle';
 import multipleFlightIcon from './multipleFlightIcon.svg';
@@ -38,7 +38,7 @@ width: 100%;
 `
 );
 
-export function FlightDeltailsListItem({
+export const FlightDeltailsListItem: React.FC<FlightDetails> = ({
   name,
   flightNo,
   origin,
@@ -49,7 +49,7 @@ export function FlightDeltailsListItem({
   date,
   stops,
   isDetailedItem
-}: FlightDetails) {
+}) => {
   // const isExtraSmallScreen = useMediaQuery(extraSmallScreenQuery);
   const { showDetails, toggleDetails } = useMultipleFlightDetails();
   const departure = moment(`${date}, ${departureTime}`, 'YYYY/MM/DD, HH:mm');
@@ -63,7 +63,7 @@ export function FlightDeltailsListItem({
     stops &&
     !isNonStop &&
     stops.map((stopdetail, index) => (
-      <div>
+      <div key={index}>
         <FlightDeltailsListItem {...stopdetail} isDetailedItem={true} />
         {index !== stops.length - 1 && (
           <LayOverDuration
@@ -135,9 +135,14 @@ export function FlightDeltailsListItem({
             <StyledResponsiveTitle
               level={4}
               smallScreenFontSize={16}
-              css={css`
-                color: green;
-              `}
+              css={
+                !isNonStop &&
+                css`
+                  && {
+                    color: green;
+                  }
+                `
+              }
             >
               {timeDuration}
             </StyledResponsiveTitle>
@@ -161,4 +166,4 @@ export function FlightDeltailsListItem({
       {multipleDetails}
     </div>
   );
-}
+};

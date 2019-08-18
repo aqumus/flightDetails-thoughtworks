@@ -21,7 +21,7 @@ export const StyledSection = styled.section`
 export const StyledDirectionFormItem = styled(Form.Item)`
   margin: 0;
   height: 35px;
-  .ant-radio-button-wrapper:first-child {
+  .ant-radio-button-wrapper:first-of-type {
     border-radius: 4px 0 0 0;
   }
   .ant-radio-button-wrapper:last-child {

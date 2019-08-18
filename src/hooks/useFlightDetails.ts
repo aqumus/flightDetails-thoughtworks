@@ -20,63 +20,13 @@ const searchingFlightDetails = {
 
 const url = 'https://tw-frontenders.firebaseio.com/advFlightSearch.json';
 
-const flightDetails: ReadonlyArray<SearchedFlightDetails> = [
-  {
-    origin: 'Pune (PNQ)',
-    destination: 'Delhi (DEL)',
-    direction: FlightDirection.DEPARTURE,
-    date: '2020/11/01',
-    flights: [
-      {
-        arrivalTime: '6:00',
-        date: '2020/11/01',
-        departureTime: '5:00',
-        flightNo: 'AI-101',
-        name: 'Air India',
-        origin: 'Pune (PNQ)',
-        destination: 'Delhi (DEL)',
-        price: 3525
-      },
-      {
-        arrivalTime: '20:00',
-        date: '2020/11/01',
-        departureTime: '5:00',
-        origin: 'Pune (PNQ)',
-        destination: 'Delhi (DEL)',
-        price: 10525,
-        stops: [
-          {
-            arrivalTime: '10:00',
-            date: '2020/11/01',
-            departureTime: '5:00',
-            flightNo: 'AI-101',
-            name: 'Air India',
-            origin: 'Pune (PNQ)',
-            destination: 'Mumbai (MUM)',
-            price: 3000
-          },
-          {
-            arrivalTime: '20:00',
-            date: '2020/11/01',
-            departureTime: '13:00',
-            flightNo: 'AI-101',
-            name: 'Air India',
-            origin: 'Mumbai (MUM)',
-            destination: 'Delhi (DEL)',
-            price: 7525
-          }
-        ]
-      }
-    ]
-  }
-];
-
 export const useFlightDetails = (initialValue: FlightDetailsContainerState) => {
   const [flightDetails, _setFlightsDetails] = useState(initialValue);
   const searchFlightDetails = useCallback(
     async formValues => {
       _setFlightsDetails(searchingFlightDetails);
       const flightsData = await getFlightsData();
+      // TODO: search the flights details in a web worker to avoid blocking UI
       const flights = searchFlightsbyFormValues(formValues, flightsData);
       _setFlightsDetails({ isSearching: false, flights });
     },
@@ -102,7 +52,9 @@ function searchFlightsbyFormValues(
     destination,
     departureDate,
     returnDate,
-    journeyType
+    journeyType,
+    passengers,
+    maxPrice
   } = formValues;
   const departureFlights = searchFlights(
     origin,
@@ -110,13 +62,19 @@ function searchFlightsbyFormValues(
     departureDate,
     flights
   );
+  const customDepartureFlights = mapPassengerAndFilterFlightsByMaxPrice(
+    departureFlights,
+    passengers,
+    maxPrice
+  );
   const departureDetails = {
     origin,
     destination,
     date: departureDate,
-    flights: departureFlights,
+    flights: customDepartureFlights,
     direction: FlightDirection.DEPARTURE
   };
+
   if (journeyType === JourneyType.RETURN) {
     const returnFlights = searchFlights(
       destination,
@@ -124,11 +82,17 @@ function searchFlightsbyFormValues(
       returnDate,
       flights
     );
+    const customReturnFlights = mapPassengerAndFilterFlightsByMaxPrice(
+      returnFlights,
+      passengers,
+      maxPrice
+    );
+
     const returnDetails = {
       origin: destination,
       destination: origin,
       date: returnDate,
-      flights: returnFlights,
+      flights: customReturnFlights,
       direction: FlightDirection.ARRIVAL
     };
 
@@ -136,4 +100,31 @@ function searchFlightsbyFormValues(
   }
 
   return [departureDetails];
+}
+
+function mapPassengerAndFilterFlightsByMaxPrice(
+  flights: ReadonlyArray<FlightDetails>,
+  passengers: number,
+  maxPrice?: number
+) {
+  return flights.reduce(
+    (modifiedFlights: ReadonlyArray<FlightDetails>, flight: FlightDetails) => {
+      const updatedPrice = flight.price * passengers;
+
+      if (!maxPrice || updatedPrice < maxPrice) {
+        modifiedFlights = [
+          ...modifiedFlights,
+          {
+            ...flight,
+            price: updatedPrice
+          }
+        ];
+        return modifiedFlights;
+      }
+
+      // updatedPrice is greater than maxPrice so fliter out the flight
+      return modifiedFlights;
+    },
+    []
+  );
 }

@@ -1,5 +1,4 @@
 import { JourneyType } from './JourneyType';
-import { FlightDirection } from './FlightDirection';
 
 export type FlightDetailsFormValues = {
   readonly journeyType: JourneyType;
@@ -7,6 +6,6 @@ export type FlightDetailsFormValues = {
   readonly destination: string;
   readonly departureDate: string;
   readonly returnDate: string;
-  readonly passengers: string;
-  readonly maxPrice: string;
+  readonly passengers: number;
+  readonly maxPrice?: number;
 };
